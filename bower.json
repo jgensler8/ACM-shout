@@ -1,0 +1,25 @@
+{
+  "name": "ACM-shout",
+  "version": "0.0.0",
+  "homepage": "https://github.com/jgensler8/ACM-shout",
+  "description": "shout things",
+  "authors": [
+    "Jeff Gensler"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.1.1",
+    "jasny-bootstrap": "~3.1.1",
+    "d3": "~3.4.6",
+    "bootstrap-multiselect": "~0.9.4",
+    "wysihtml5": "~0.3.0",
+    "epiceditor": "~0.2.2"
+  }
+}

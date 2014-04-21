@@ -1,0 +1,306 @@
+<html>
+  <head>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script type='text/javascript' src='https://cdn.firebase.com/js/client/1.0.11/firebase.js'></script>
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/jasny-bootstrap/dist/css/jasny-bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="nav.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-multiselect/css/bootstrap-multiselect.css"/>
+    <link rel="stylesheet" type="text/css" href="bower_components/epiceditor/epiceditor/themes/base/epiceditor.css"/>
+  </head>
+  <body>
+    <!--NAV-->
+    <div class="row" style="height:60px">
+      <nav id="LeftMenu" class="navmenu navmenu-default navmenu-fixed-left offcanvas" role="navigation">
+        <ul class="nav navmenu-nav">
+          <li><a href="#SuggestionsPage" data-toggle="tab" class="btn">Suggestions</a></li>
+          <li><a href="#ComplaintsPage" data-toggle="tab" class="btn">Complaints</a></li>
+          <li href="http://acm.cs.uic.edu/" class="btn navbar-btn">ACM</li>
+          <li href="http://lug.cs.uic.edu/" class="btn navbar-btn">LUG</li>
+        </ul>
+      </nav>
+      <nav class="navbar navbar-default navbar-fixed-top">
+        <ul class="nav navbar-nav navbar-left">
+          <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target="#LeftMenu" data-canvas="body">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </ul>
+      </nav>
+    </div>
+      
+    <!--Tab Content-->
+    <div class="row">
+      <div class="tab-content">
+        <div class="tab-pane fade in active" id="SuggestionsPage">
+          <div class="row">
+            <div class="col-sm-1 col-md-1 col-lg-1">
+            </div>
+            <div class="col-sm-11 col-md-6 col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading text-center">Submit a Suggestion</div>
+                <div class="panel-body">
+                  
+                  <div class="row text-center">
+                    <button type="button" id="SuggestionSubmit" class="btn btn-default">Submit</button>
+                    <select class="multiselect" id="SuggestionMulti" multiple="multiple">
+                      <option value="cheese">SIG</option>
+                      <option value="protocol">Protocol</option>
+                      <option value="idea">Idea</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                    
+                  <div class="row">
+                    <div id="SuggestionEditor">
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+              
+              <div class="panel panel-default">
+                <div class="panel-heading text-center">Suggestions</div>
+                <div class="panel-body">
+                  
+                  <ul id="SuggestionsList">
+                  </ul>
+                  
+                </div>
+              </div>
+              
+            </div>
+            <div class="col-sm-11 col-md-4 col-lg-4">
+              <div class="panel panel-default">
+                <div class="panel-heading text-center">Graph</div>
+                <div class="panel-body">
+                  <div id="SuggestionsGraph"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-1 col-md-1 col-lg-1">
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="ComplaintsPage">
+          <div class="row">
+            <div class="col-sm-1 col-md-1 col-lg-1">
+            </div>
+            <div class="col-sm-11 col-md-6 col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading text-center">Complaints</div>
+                <div class="panel-body">
+                  
+                  <div class="row text-center">
+                    <button type="button" id="ComplaintSubmit" class="btn btn-default">Submit</button>
+                    <select class="multiselect" id="ComplaintMulti" multiple="multiple">
+                      <option value="noise">Noise</option>
+                      <option value="people">People</option>
+                      <option value="availability">Availability</option>
+                      <option value="Officers">Officers</option>
+                      
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                    
+                  <div class="row">
+                    <div id="ComplaintEditor">
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-11 col-md-4 col-lg-4">
+              <div class="panel panel-default">
+                <div class="panel-heading text-center">Graph</div>
+                <div class="panel-body">
+                  
+                  <div id="ComplaintsGraph">
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-1 col-md-1 col-lg-1">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/js/tab.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/js/collapse.js"></script>
+    <script type="text/javascript" src="bower_components/jasny-bootstrap/dist/js/jasny-bootstrap.min.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="bower_components/jasny-bootstrap/js/offcanvas.js"></script>
+    <script type="text/javascript" src="bower_components/d3/d3.js"></script>
+    <script type="text/javascript" src="bower_components/epiceditor/epiceditor/js/epiceditor.js"></script>
+    
+    <script>
+      var rootRef = new Firebase('https://acm-shout.firebaseIO-demo.com/');
+      var complaintsRef = rootRef.child('complaints');
+      var suggestionsRef = rootRef.child('suggestions');
+      //var newsRef = rootRef.child('news');
+      $('#SuggestionsPageButton a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+      });
+      $('#ComplaintsPageButton a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+      }); 
+      $(document).ready(function() {
+        $('.multiselect').multiselect();
+      });
+      
+      var SuggestionsOptions = {
+        container: 'SuggestionEditor',
+        basePath: 'bower_components/epiceditor/epiceditor/themes',
+        localStorageName: 'epiceditor',
+        file: {
+          name: 'epiceditor',
+          defaultContent: '#Enter markdown here#',
+          autoSave: 100
+        },
+        theme: {
+          base: '/base/epiceditor.css',
+          preview: '/preview/preview-dark.css',
+          editor: '/editor/epic-light.css'
+        }
+      };
+      var ComplaintsOptions = {
+        container: 'SuggestionEditor',
+        basePath: 'bower_components/epiceditor/epiceditor/themes',
+        localStorageName: 'epiceditor',
+        file: {
+          name: 'epiceditor',
+          defaultContent: '#Enter markdown here#',
+          autoSave: 100
+        },
+        theme: {
+          base: '/base/epiceditor.css',
+          preview: '/preview/preview-dark.css',
+          editor: '/editor/epic-light.css'
+        }
+      };
+      var ComplaintEditor = new EpicEditor(ComplaintsOptions).load();
+      var SuggestionEditor = new EpicEditor(SuggestionsOptions).load();
+      $('#SuggestionSubmit').click(function(){
+        var data = {
+          text:  SuggestionEditor.exportFile(),
+          categories: $('#SuggestionMulti').val()
+        }
+        suggestionsRef.set(data);
+      });
+      $('#ComplaintSubmit').click(function(){
+        var data = {
+          text:  ComplaintEditor.exportFile(),
+          categories: $('#ComplaintMulti').val()
+        }
+      });     
+      
+      //group by comaplint type
+      
+      //sort by time of day
+      
+      //links based on how similar they are
+      // upvotes???
+      
+      // From http://mkweb.bcgsc.ca/circos/guide/tables/
+      var matrix = [
+        [11975,  5871, 8916, 2868],
+        [ 1951, 10048, 2060, 6171],
+        [ 8010, 16145, 8090, 8045],
+        [ 1013,   990,  940, 6907]
+      ];
+      
+      var chord = d3.layout.chord()
+          .padding(.05)
+          .sortSubgroups(d3.descending)
+          .matrix(matrix);
+      
+      var width = 200,
+          height = 200,
+          innerRadius = Math.min(width, height) * .41,
+          outerRadius = innerRadius * 1.1;
+      
+      var fill = d3.scale.ordinal()
+          .domain(d3.range(4))
+          .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
+      
+      var svg = d3.select("#SuggestionsGraph").append("svg")
+          .attr("width", width)
+          .attr("height", height)
+        .append("g")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+      
+      svg.append("g").selectAll("path")
+          .data(chord.groups)
+        .enter().append("path")
+          .style("fill", function(d) { return fill(d.index); })
+          .style("stroke", function(d) { return fill(d.index); })
+          .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius))
+          .on("mouseover", fade(.1))
+          .on("mouseout", fade(1));
+      
+      var ticks = svg.append("g").selectAll("g")
+          .data(chord.groups)
+        .enter().append("g").selectAll("g")
+          .data(groupTicks)
+        .enter().append("g")
+          .attr("transform", function(d) {
+            return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+                + "translate(" + outerRadius + ",0)";
+          });
+      
+      ticks.append("line")
+          .attr("x1", 1)
+          .attr("y1", 0)
+          .attr("x2", 5)
+          .attr("y2", 0)
+          .style("stroke", "#000");
+      
+      ticks.append("text")
+          .attr("x", 8)
+          .attr("dy", ".35em")
+          .attr("transform", function(d) { return d.angle > Math.PI ? "rotate(180)translate(-16)" : null; })
+          .style("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+          .text(function(d) { return d.label; });
+      
+      svg.append("g")
+          .attr("class", "chord")
+        .selectAll("path")
+          .data(chord.chords)
+        .enter().append("path")
+          .attr("d", d3.svg.chord().radius(innerRadius))
+          .style("fill", function(d) { return fill(d.target.index); })
+          .style("opacity", 1);
+      
+      // Returns an array of tick angles and labels, given a group.
+      function groupTicks(d) {
+        var k = (d.endAngle - d.startAngle) / d.value;
+        return d3.range(0, d.value, 1000).map(function(v, i) {
+          return {
+            angle: v * k + d.startAngle,
+            label: i % 5 ? null : v / 1000 + "k"
+          };
+        });
+      }
+      
+      // Returns an event handler for fading a given chord group.
+      function fade(opacity) {
+        return function(g, i) {
+          svg.selectAll(".chord path")
+              .filter(function(d) { return d.source.index != i && d.target.index != i; })
+            .transition()
+              .style("opacity", opacity);
+        };
+      }
+      
+    </script>
+  </body>  
+
+</html>
